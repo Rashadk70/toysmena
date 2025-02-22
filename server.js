@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const app = express();
 
 // Enable CORS for all routes
@@ -8,6 +9,9 @@ app.use(cors());
 // Middleware
 app.use(express.json());
 
+// Serve static files from the React build directory
+app.use(express.static(path.join(__dirname, 'client/build')));
+
 // Basic route to check if server is running
 app.get('/api/status', (req, res) => {
   res.json({ 
@@ -15,6 +19,17 @@ app.get('/api/status', (req, res) => {
     time: new Date().toISOString(),
     message: 'Backend is accessible'
   });
+});
+
+// Handle all other routes by serving the React app
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // Start server

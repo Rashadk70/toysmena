@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      background-color: #57B9FF;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 5px 5px 0 0;
+    }
+    .content {
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 0 0 5px 5px;
+    }
+    .status-update {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f5f5f5;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      color: white;
+    }
+    .status-processing {
+      background-color: #ff9800;
+    }
+    .status-shipped {
+      background-color: #2196f3;
+    }
+    .status-delivered {
+      background-color: #4caf50;
+    }
+    .status-cancelled {
+      background-color: #f44336;
+    }
+    .tracking-info {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><%= storeName %></h1>
+    <p>Order Status Update</p>
+  </div>
+  
+  <div class="content">
+    <p>Dear <%= order.customer.name %>,</p>
+    
+    <p>We're writing to let you know that there has been an update to your order #<%= order.id %>.</p>
+    
+    <div class="status-update">
+      <h3>Order Status:</h3>
+      <div class="status-badge status-<%= order.status.toLowerCase() %>">
+        <%= order.status %>
+      </div>
+    </div>
+    
+    <% if (order.status === 'Shipped') { %>
+      <div class="tracking-info">
+        <h3>Tracking Information:</h3>
+        <p>Carrier: <%= order.shipping.carrier %></p>
+        <p>Tracking Number: <%= order.shipping.trackingNumber %></p>
+        <p>Estimated Delivery: <%= new Date(order.shipping.estimatedDelivery).toLocaleDateString() %></p>
+        <% if (order.shipping.trackingUrl) { %>
+          <p>
+            <a href="<%= order.shipping.trackingUrl %>">Track Your Package</a>
+          </p>
+        <% } %>
+      </div>
+    <% } %>
+    
+    <% if (order.status === 'Cancelled') { %>
+      <p>If you have any questions about the cancellation, please contact our support team.</p>
+    <% } %>
+    
+    <div class="order-summary">
+      <h3>Order Summary:</h3>
+      <p>Order Date: <%= new Date(order.createdAt).toLocaleDateString() %></p>
+      <p>Total Amount: AED <%= order.total %></p>
+      
+      <h4>Shipping Address:</h4>
+      <p>
+        <%= order.shippingAddress.address %><br>
+        <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> <%= order.shippingAddress.zipCode %><br>
+        <%= order.shippingAddress.country %>
+      </p>
+    </div>
+    
+    <p>You can view your order details and track its status by logging into your account.</p>
+    
+    <p>If you have any questions or concerns, please don't hesitate to contact our customer support team at <%= supportEmail %>.</p>
+    
+    <p>Thank you for shopping with <%= storeName %>!</p>
+  </div>
+  
+  <div class="footer">
+    <p>This email was sent from <%= storeName %>. Please do not reply to this email.</p>
+    <p>&copy; <%= new Date().getFullYear() %> <%= storeName %>. All rights reserved.</p>
+  </div>
+</body>
+</html>

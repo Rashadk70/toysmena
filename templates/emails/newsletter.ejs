@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      background-color: #57B9FF;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 5px 5px 0 0;
+    }
+    .content {
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 0 0 5px 5px;
+    }
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 5px;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin: 15px 0;
+    }
+    .product-card {
+      border: 1px solid #eee;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .product-image {
+      width: 100%;
+      max-width: 150px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+    .price {
+      color: #e41e31;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+    .discount {
+      background: #e41e31;
+      color: white;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 14px;
+    }
+    .cta-button {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #57B9FF;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><%= storeName %></h1>
+    <p>Weekly Newsletter</p>
+  </div>
+  
+  <div class="content">
+    <h2>This Week's Highlights</h2>
+    
+    <div class="section">
+      <h3>Featured Products</h3>
+      <div class="product-grid">
+        <% featuredProducts.forEach(function(product) { %>
+          <div class="product-card">
+            <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image">
+            <h4><%= product.name %></h4>
+            <p class="price">AED <%= product.price %></p>
+            <a href="https://toysmena.com/products/<%= product._id %>" class="cta-button">Shop Now</a>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h3>Special Deals</h3>
+      <div class="product-grid">
+        <% deals.forEach(function(product) { %>
+          <div class="product-card">
+            <img src="<%= product.image %>" alt="<%= product.name %>" class="product-image">
+            <h4><%= product.name %></h4>
+            <p>
+              <span class="discount"><%= product.discount %>% OFF</span>
+            </p>
+            <p class="price">
+              <s>AED <%= product.originalPrice %></s>
+              AED <%= product.price %>
+            </p>
+            <a href="https://toysmena.com/products/<%= product._id %>" class="cta-button">Shop Now</a>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+    
+    <% if (weeklyHighlights.newArrivals) { %>
+      <div class="section">
+        <h3>New Arrivals</h3>
+        <p>Check out our latest educational toys and learning materials!</p>
+        <a href="https://toysmena.com/new-arrivals" class="cta-button">View All New Arrivals</a>
+      </div>
+    <% } %>
+    
+    <% if (weeklyHighlights.topCategories.length > 0) { %>
+      <div class="section">
+        <h3>Top Categories</h3>
+        <ul>
+          <% weeklyHighlights.topCategories.forEach(function(category) { %>
+            <li><a href="https://toysmena.com/category/<%= category.toLowerCase() %>"><%= category %></a></li>
+          <% }); %>
+        </ul>
+      </div>
+    <% } %>
+    
+    <div class="section">
+      <h3>Stay Connected</h3>
+      <p>Follow us on social media for daily updates and special offers!</p>
+      <div style="margin-top: 10px;">
+        <a href="https://facebook.com/toysmena" style="margin-right: 10px;">Facebook</a>
+        <a href="https://instagram.com/toysmena" style="margin-right: 10px;">Instagram</a>
+        <a href="https://twitter.com/toysmena">Twitter</a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p>You received this email because you subscribed to our newsletter.</p>
+    <p><a href="[unsubscribe_link]">Unsubscribe</a> | <a href="[preference_link]">Update Preferences</a></p>
+    <p>&copy; <%= new Date().getFullYear() %> <%= storeName %>. All rights reserved.</p>
+  </div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const mongoose = require('mongoose');
 const app = express();
 
 // Enable CORS for all routes
@@ -8,6 +9,14 @@ app.use(cors());
 
 // Middleware
 app.use(express.json());
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err));
 
 // Serve static files from the React build directory
 app.use(express.static(path.join(__dirname, 'client/build')));

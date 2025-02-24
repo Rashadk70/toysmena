@@ -7,7 +7,7 @@ const { protect } = require('../middleware/auth');
 // Register user
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, isAdmin } = req.body;
+    const { name, email, password } = req.body;
 
     // Check if user exists
     let user = await User.findOne({ email });
@@ -23,7 +23,60 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password,
-      role: isAdmin ? 'admin' : 'user'  // Allow setting admin role during registration
+      role: 'user'  // Default role is user
+    });
+
+    // Create token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '30d',
+    });
+
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+// Register admin (secure route)
+router.post('/register-admin', async (req, res) => {
+  try {
+    const { name, email, password, adminKey } = req.body;
+
+    // Verify admin key
+    if (!adminKey || adminKey !== process.env.ADMIN_KEY) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid admin key',
+      });
+    }
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists',
+      });
+    }
+
+    // Create admin user
+    user = await User.create({
+      name,
+      email,
+      password,
+      role: 'admin'
     });
 
     // Create token

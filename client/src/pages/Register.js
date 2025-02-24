@@ -8,9 +8,6 @@ import {
   Typography,
   Box,
   Alert,
-  Link as MuiLink,
-  FormControlLabel,
-  Checkbox
 } from '@mui/material';
 
 const Register = () => {
@@ -20,7 +17,6 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    isAdmin: false
   });
   const [error, setError] = useState('');
 
@@ -50,7 +46,6 @@ const Register = () => {
           name: formData.name,
           email: formData.email,
           password: formData.password,
-          isAdmin: formData.isAdmin
         }),
       });
 
@@ -128,18 +123,6 @@ const Register = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
             />
-            <Box sx={{ mt: 2, mb: 2 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formData.isAdmin}
-                    onChange={(e) => setFormData({ ...formData, isAdmin: e.target.checked })}
-                    name="isAdmin"
-                  />
-                }
-                label="Register as Admin"
-              />
-            </Box>
             <Button
               type="submit"
               fullWidth
@@ -149,9 +132,9 @@ const Register = () => {
               Register
             </Button>
             <Box sx={{ textAlign: 'center' }}>
-              <MuiLink component={Link} to="/login" variant="body2">
+              <Link to="/login" style={{ textDecoration: 'none', color: 'primary.main' }}>
                 Already have an account? Sign in
-              </MuiLink>
+              </Link>
             </Box>
           </form>
         </Paper>

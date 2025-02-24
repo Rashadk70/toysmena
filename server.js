@@ -4,6 +4,9 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+// Set default admin key if not in environment
+process.env.ADMIN_KEY = process.env.ADMIN_KEY || 'toysmena_admin_2025';
+
 const app = express();
 
 // Middleware

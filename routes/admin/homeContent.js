@@ -24,7 +24,7 @@ router.get('/home-content', auth, async (req, res) => {
 });
 
 // Banner routes
-router.post('/banners', [auth, admin], async (req, res) => {
+router.post('/banners', auth, admin, async (req, res) => {
   try {
     const banner = new Banner(req.body);
     await banner.save();
@@ -34,7 +34,7 @@ router.post('/banners', [auth, admin], async (req, res) => {
   }
 });
 
-router.put('/banners/:id', [auth, admin], async (req, res) => {
+router.put('/banners/:id', auth, admin, async (req, res) => {
   try {
     const banner = await Banner.findByIdAndUpdate(
       req.params.id,
@@ -50,7 +50,7 @@ router.put('/banners/:id', [auth, admin], async (req, res) => {
   }
 });
 
-router.delete('/banners/:id', [auth, admin], async (req, res) => {
+router.delete('/banners/:id', auth, admin, async (req, res) => {
   try {
     const banner = await Banner.findByIdAndDelete(req.params.id);
     if (!banner) {
@@ -63,7 +63,7 @@ router.delete('/banners/:id', [auth, admin], async (req, res) => {
 });
 
 // Featured Category routes
-router.post('/featured-categories', [auth, admin], async (req, res) => {
+router.post('/featured-categories', auth, admin, async (req, res) => {
   try {
     const category = new FeaturedCategory(req.body);
     await category.save();
@@ -73,7 +73,7 @@ router.post('/featured-categories', [auth, admin], async (req, res) => {
   }
 });
 
-router.put('/featured-categories/:id', [auth, admin], async (req, res) => {
+router.put('/featured-categories/:id', auth, admin, async (req, res) => {
   try {
     const category = await FeaturedCategory.findByIdAndUpdate(
       req.params.id,
@@ -89,7 +89,7 @@ router.put('/featured-categories/:id', [auth, admin], async (req, res) => {
   }
 });
 
-router.delete('/featured-categories/:id', [auth, admin], async (req, res) => {
+router.delete('/featured-categories/:id', auth, admin, async (req, res) => {
   try {
     const category = await FeaturedCategory.findByIdAndDelete(req.params.id);
     if (!category) {
@@ -102,7 +102,7 @@ router.delete('/featured-categories/:id', [auth, admin], async (req, res) => {
 });
 
 // Promotion routes
-router.post('/promotions', [auth, admin], async (req, res) => {
+router.post('/promotions', auth, admin, async (req, res) => {
   try {
     const promotion = new Promotion(req.body);
     await promotion.save();
@@ -112,7 +112,7 @@ router.post('/promotions', [auth, admin], async (req, res) => {
   }
 });
 
-router.put('/promotions/:id', [auth, admin], async (req, res) => {
+router.put('/promotions/:id', auth, admin, async (req, res) => {
   try {
     const promotion = await Promotion.findByIdAndUpdate(
       req.params.id,
@@ -128,7 +128,7 @@ router.put('/promotions/:id', [auth, admin], async (req, res) => {
   }
 });
 
-router.delete('/promotions/:id', [auth, admin], async (req, res) => {
+router.delete('/promotions/:id', auth, admin, async (req, res) => {
   try {
     const promotion = await Promotion.findByIdAndDelete(req.params.id);
     if (!promotion) {
@@ -141,7 +141,7 @@ router.delete('/promotions/:id', [auth, admin], async (req, res) => {
 });
 
 // Custom Section routes
-router.post('/custom-sections', [auth, admin], async (req, res) => {
+router.post('/custom-sections', auth, admin, async (req, res) => {
   try {
     const section = new CustomSection(req.body);
     await section.save();
@@ -151,7 +151,7 @@ router.post('/custom-sections', [auth, admin], async (req, res) => {
   }
 });
 
-router.put('/custom-sections/:id', [auth, admin], async (req, res) => {
+router.put('/custom-sections/:id', auth, admin, async (req, res) => {
   try {
     const section = await CustomSection.findByIdAndUpdate(
       req.params.id,
@@ -167,7 +167,7 @@ router.put('/custom-sections/:id', [auth, admin], async (req, res) => {
   }
 });
 
-router.delete('/custom-sections/:id', [auth, admin], async (req, res) => {
+router.delete('/custom-sections/:id', auth, admin, async (req, res) => {
   try {
     const section = await CustomSection.findByIdAndDelete(req.params.id);
     if (!section) {

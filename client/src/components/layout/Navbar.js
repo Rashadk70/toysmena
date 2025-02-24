@@ -353,17 +353,17 @@ export default function Navbar() {
                       open={Boolean(anchorElUser)}
                       onClose={handleCloseUserMenu}
                     >
+                      {user.role === 'admin' && (
+                        <MenuItem component={Link} to="/admin">
+                          Admin Dashboard
+                        </MenuItem>
+                      )}
                       <MenuItem component={Link} to="/account">
                         My Account
                       </MenuItem>
                       <MenuItem component={Link} to="/orders">
                         My Orders
                       </MenuItem>
-                      {user.role === 'admin' && (
-                        <MenuItem component={Link} to="/admin">
-                          Admin Dashboard
-                        </MenuItem>
-                      )}
                       <MenuItem onClick={handleLogout}>Logout</MenuItem>
                     </Menu>
                   </Box>

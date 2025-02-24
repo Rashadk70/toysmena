@@ -44,17 +44,23 @@ const Login = () => {
         throw new Error(data.message || 'Login failed');
       }
 
-      // Store the token and user data
+      // Store user data and token
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+
+      // Log the user role for debugging
+      console.log('User role:', data.user.role);
       
-      // Redirect based on user role
+      // Redirect based on role
       if (data.user.role === 'admin') {
+        console.log('Redirecting to admin dashboard...');
         navigate('/admin');
       } else {
+        console.log('Redirecting to home...');
         navigate('/');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.message || 'Login failed. Please try again.');
     }
   };

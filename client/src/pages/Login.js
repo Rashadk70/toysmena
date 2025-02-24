@@ -102,10 +102,16 @@ const Login = () => {
             >
               Sign In
             </Button>
-            <Box sx={{ textAlign: 'center' }}>
-              <MuiLink component={Link} to="/register" variant="body2">
-                Don't have an account? Sign up
-              </MuiLink>
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Button
+                component={Link}
+                to="/register"
+                variant="outlined"
+                fullWidth
+                sx={{ mb: 2 }}
+              >
+                Create New Account
+              </Button>
             </Box>
           </form>
         </Paper>

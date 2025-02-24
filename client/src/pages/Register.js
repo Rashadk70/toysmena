@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import {
   Container,
   Paper,
@@ -12,12 +11,13 @@ import {
   Link as MuiLink,
 } from '@mui/material';
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
+    confirmPassword: ''
   });
   const [error, setError] = useState('');
 
@@ -30,28 +30,36 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.message || 'Registration failed');
       }
 
-      // Store the token
-      localStorage.setItem('token', data.token);
-      
-      // Redirect to home or dashboard
-      navigate('/');
+      // Registration successful
+      navigate('/login');
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -60,7 +68,7 @@ const Login = () => {
       <Box sx={{ mt: 8, mb: 4 }}>
         <Paper elevation={3} sx={{ p: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom align="center">
-            Login
+            Register
           </Typography>
           
           {error && (
@@ -74,11 +82,22 @@ const Login = () => {
               margin="normal"
               required
               fullWidth
+              id="name"
+              label="Full Name"
+              name="name"
+              autoComplete="name"
+              autoFocus
+              value={formData.name}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               id="email"
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus
               value={formData.email}
               onChange={handleChange}
             />
@@ -90,8 +109,19 @@ const Login = () => {
               label="Password"
               type="password"
               id="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               value={formData.password}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              id="confirmPassword"
+              value={formData.confirmPassword}
               onChange={handleChange}
             />
             <Button
@@ -100,11 +130,11 @@ const Login = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Register
             </Button>
             <Box sx={{ textAlign: 'center' }}>
-              <MuiLink component={Link} to="/register" variant="body2">
-                Don't have an account? Sign up
+              <MuiLink component={Link} to="/login" variant="body2">
+                Already have an account? Sign in
               </MuiLink>
             </Box>
           </form>
@@ -114,4 +144,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

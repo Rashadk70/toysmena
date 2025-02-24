@@ -13,6 +13,7 @@ import Wishlist from './pages/Wishlist';
 import Account from './pages/Account';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
+import Register from './pages/Register';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/account" element={<Account />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           
           {/* Protected Admin Routes */}
           <Route

@@ -8,7 +8,7 @@ import Footer from './components/layout/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Admin from './pages/Admin';
+import AdminLayout from './pages/Admin/AdminLayout';
 import AdminDashboard from './pages/Admin/Dashboard';
 import AdminUsers from './pages/Admin/Users';
 import AdminProducts from './pages/Admin/Products';
@@ -49,21 +49,22 @@ function App() {
           <Navbar />
           <Box component="main" sx={{ flexGrow: 1 }}>
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/account" element={<Account />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              
+
               {/* Admin Routes */}
               <Route
                 path="/admin"
                 element={
                   <AdminRoute>
-                    <Admin />
+                    <AdminLayout />
                   </AdminRoute>
                 }
               >
@@ -75,6 +76,18 @@ function App() {
                 <Route path="settings" element={<AdminSettings />} />
                 <Route path="home-edit" element={<AdminHomeEdit />} />
               </Route>
+
+              {/* Category Routes */}
+              <Route path="/category/:category/:subcategory" element={<Products />} />
+              <Route path="/sellers" element={<Products />} />
+              <Route path="/clerkery-books" element={<Products />} />
+              <Route path="/dryad-big-book" element={<Products />} />
+              <Route path="/dryad-education" element={<Products />} />
+              <Route path="/findel-education" element={<Products />} />
+              <Route path="/normans-music" element={<Products />} />
+              <Route path="/specialist-crafts" element={<Products />} />
+              <Route path="/samaritan" element={<Products />} />
+              <Route path="/wildgoose" element={<Products />} />
             </Routes>
           </Box>
           <Footer />

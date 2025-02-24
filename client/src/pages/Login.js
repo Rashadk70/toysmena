@@ -9,7 +9,6 @@ import {
   Typography,
   Box,
   Alert,
-  Link as MuiLink,
 } from '@mui/material';
 
 const Login = () => {
@@ -45,11 +44,16 @@ const Login = () => {
         throw new Error(data.message || 'Login failed');
       }
 
-      // Store the token
+      // Store the token and user data
       localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
       
-      // Redirect to home or dashboard
-      navigate('/');
+      // Redirect based on user role
+      if (data.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
     }

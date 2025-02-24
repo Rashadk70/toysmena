@@ -17,7 +17,7 @@ import Register from './pages/Register';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { user } = useSelector((state) => state.auth);
+  const user = JSON.parse(localStorage.getItem('user'));
   
   if (!user || user.role !== 'admin') {
     return <Navigate to="/login" />;

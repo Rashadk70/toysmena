@@ -48,6 +48,8 @@ const HomeEdit = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogType, setDialogType] = useState('');
   const [editingItem, setEditingItem] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const [newBanner, setNewBanner] = useState({
     title: '',
@@ -92,19 +94,61 @@ const HomeEdit = () => {
 
   const fetchHomeContent = async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/admin/home-content');
       const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch home content');
+      }
+
       setBanners(data.banners || []);
       setFeaturedCategories(data.featuredCategories || []);
       setPromotions(data.promotions || []);
       setCustomSections(data.customSections || []);
-    } catch (error) {
-      console.error('Error fetching home content:', error);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+  const handleUpdateStatus = async (type, id, status) => {
+    try {
+      const response = await fetch(`/api/admin/home-content/${type}/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ active: status }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to update status');
+      }
+
+      // Update local state based on type
+      switch (type) {
+        case 'banner':
+          setBanners(banners.map(b => b._id === id ? { ...b, active: status } : b));
+          break;
+        case 'category':
+          setFeaturedCategories(cats => cats.map(c => c._id === id ? { ...c, active: status } : c));
+          break;
+        case 'promotion':
+          setPromotions(promos => promos.map(p => p._id === id ? { ...p, active: status } : p));
+          break;
+        case 'custom':
+          setCustomSections(sections => sections.map(s => s._id === id ? { ...s, active: status } : s));
+          break;
+        default:
+          break;
+      }
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const handleOpenDialog = (type, item = null) => {
@@ -116,72 +160,115 @@ const HomeEdit = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingItem(null);
-  };
-
-  const handleSaveItem = async () => {
-    try {
-      let endpoint = '';
-      let payload = {};
-
-      switch (dialogType) {
-        case 'banner':
-          endpoint = '/api/admin/banners';
-          payload = editingItem || newBanner;
-          break;
-        case 'category':
-          endpoint = '/api/admin/featured-categories';
-          payload = editingItem || newCategory;
-          break;
-        case 'promotion':
-          endpoint = '/api/admin/promotions';
-          payload = editingItem || newPromotion;
-          break;
-        case 'section':
-          endpoint = '/api/admin/custom-sections';
-          payload = editingItem || newSection;
-          break;
-      }
-
-      const response = await fetch(endpoint, {
-        method: editingItem ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        fetchHomeContent();
-        handleCloseDialog();
-      }
-    } catch (error) {
-      console.error('Error saving item:', error);
-    }
+    setDialogType('');
   };
 
   const handleDeleteItem = async (type, id) => {
+    if (!window.confirm('Are you sure you want to delete this item?')) {
+      return;
+    }
+
     try {
-      const endpoint = `/api/admin/${type}/${id}`;
-      const response = await fetch(endpoint, {
+      const response = await fetch(`/api/admin/home-content/${type}/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
       });
 
-      if (response.ok) {
-        fetchHomeContent();
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to delete item');
       }
-    } catch (error) {
-      console.error('Error deleting item:', error);
+
+      // Update local state based on type
+      switch (type) {
+        case 'banners':
+          setBanners(banners.filter(b => b._id !== id));
+          break;
+        case 'categories':
+          setFeaturedCategories(cats => cats.filter(c => c._id !== id));
+          break;
+        case 'promotions':
+          setPromotions(promos => promos.filter(p => p._id !== id));
+          break;
+        case 'custom-sections':
+          setCustomSections(sections => sections.filter(s => s._id !== id));
+          break;
+        default:
+          break;
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
-  const renderBannerSection = () => (
+  const handleSaveItem = async (formData) => {
+    try {
+      const method = editingItem ? 'PUT' : 'POST';
+      const url = editingItem 
+        ? `/api/admin/home-content/${dialogType}/${editingItem._id}`
+        : `/api/admin/home-content/${dialogType}`;
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to save item');
+      }
+
+      // Update local state based on type
+      switch (dialogType) {
+        case 'banner':
+          if (editingItem) {
+            setBanners(banners.map(b => b._id === editingItem._id ? data : b));
+          } else {
+            setBanners([...banners, data]);
+          }
+          break;
+        case 'category':
+          if (editingItem) {
+            setFeaturedCategories(cats => cats.map(c => c._id === editingItem._id ? data : c));
+          } else {
+            setFeaturedCategories(prev => [...prev, data]);
+          }
+          break;
+        case 'promotion':
+          if (editingItem) {
+            setPromotions(promos => promos.map(p => p._id === editingItem._id ? data : p));
+          } else {
+            setPromotions(prev => [...prev, data]);
+          }
+          break;
+        case 'custom':
+          if (editingItem) {
+            setCustomSections(sections => sections.map(s => s._id === editingItem._id ? data : s));
+          } else {
+            setCustomSections(prev => [...prev, data]);
+          }
+          break;
+        default:
+          break;
+      }
+
+      handleCloseDialog();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+
+  const renderBanners = () => (
     <Paper sx={{ p: 3, mb: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h5">Banner Management</Typography>
+        <Typography variant="h5">Banners</Typography>
         <Button
           variant="contained"
           startIcon={<Add />}
@@ -299,7 +386,7 @@ const HomeEdit = () => {
       </Box>
       <Grid container spacing={2}>
         {promotions.map((promo) => (
-          <Grid item xs={12} sm={6} key={promo._id}>
+          <Grid item xs={12} sm={6} md={4} key={promo._id}>
             <Card>
               <CardMedia
                 component="img"
@@ -309,16 +396,25 @@ const HomeEdit = () => {
               />
               <CardContent>
                 <Typography variant="h6">{promo.title}</Typography>
-                <Typography variant="body2">{promo.description}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {promo.description}
+                </Typography>
                 <Box sx={{ mt: 1 }}>
                   <Chip
-                    label={`${promo.discountValue}${promo.discountType === 'percentage' ? '%' : '$'} OFF`}
+                    label={`Valid until: ${new Date(promo.validUntil).toLocaleDateString()}`}
                     color="primary"
                     size="small"
+                    sx={{ mr: 1 }}
                   />
-                  <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                    {new Date(promo.startDate).toLocaleDateString()} - {new Date(promo.endDate).toLocaleDateString()}
-                  </Typography>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={promo.active}
+                        onChange={(e) => handleUpdateStatus('promotion', promo._id, e.target.checked)}
+                      />
+                    }
+                    label="Active"
+                  />
                 </Box>
               </CardContent>
               <CardActions>
@@ -343,7 +439,7 @@ const HomeEdit = () => {
         <Button
           variant="contained"
           startIcon={<Add />}
-          onClick={() => handleOpenDialog('section')}
+          onClick={() => handleOpenDialog('custom')}
         >
           Add Section
         </Button>
@@ -355,29 +451,24 @@ const HomeEdit = () => {
               <CardContent>
                 <Typography variant="h6">{section.title}</Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Type: {section.type} | Layout: {section.layout}
+                  {section.content}
                 </Typography>
-                <Box sx={{ mt: 1 }}>
-                  <Chip
-                    label={`${section.items.length} items`}
-                    size="small"
-                    sx={{ mr: 1 }}
-                  />
-                  <Chip
-                    label={`Background: ${section.backgroundColor}`}
-                    size="small"
-                  />
-                </Box>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={section.active}
+                      onChange={(e) => handleUpdateStatus('custom', section._id, e.target.checked)}
+                    />
+                  }
+                  label="Active"
+                />
               </CardContent>
               <CardActions>
-                <IconButton onClick={() => handleOpenDialog('section', section)}>
+                <IconButton onClick={() => handleOpenDialog('custom', section)}>
                   <Edit />
                 </IconButton>
-                <IconButton onClick={() => handleDeleteItem('sections', section._id)}>
+                <IconButton onClick={() => handleDeleteItem('custom-sections', section._id)}>
                   <Delete />
-                </IconButton>
-                <IconButton>
-                  <DragIndicator />
                 </IconButton>
               </CardActions>
             </Card>
@@ -389,39 +480,23 @@ const HomeEdit = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Edit Home Page
-      </Typography>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      
+      <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 3 }}>
+        <Tab label="Banners" />
+        <Tab label="Featured Categories" />
+        <Tab label="Promotions" />
+        <Tab label="Custom Sections" />
+      </Tabs>
 
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={activeTab} onChange={handleTabChange}>
-          <Tab label="Banners" icon={<Image />} iconPosition="start" />
-          <Tab label="Featured Categories" icon={<Category />} iconPosition="start" />
-          <Tab label="Promotions" icon={<LocalOffer />} iconPosition="start" />
-          <Tab label="Custom Sections" icon={<LinkIcon />} iconPosition="start" />
-        </Tabs>
-      </Box>
-
-      {activeTab === 0 && renderBannerSection()}
+      {activeTab === 0 && renderBanners()}
       {activeTab === 1 && renderFeaturedCategories()}
       {activeTab === 2 && renderPromotions()}
       {activeTab === 3 && renderCustomSections()}
-
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-        <DialogTitle>
-          {editingItem ? 'Edit' : 'Add'} {dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}
-        </DialogTitle>
-        <DialogContent>
-          {/* Dialog content will be different based on dialogType */}
-          {/* Add your form fields here */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSaveItem} variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Container>
   );
 };

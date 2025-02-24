@@ -9,8 +9,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
-  Divider,
 } from '@mui/material';
 import {
   Dashboard,
@@ -36,75 +34,81 @@ const Admin = () => {
   const location = useLocation();
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Grid container spacing={3}>
-        {/* Sidebar */}
-        <Grid item xs={12} md={3} lg={2}>
-          <Paper 
-            elevation={0} 
-            sx={{ 
-              borderRadius: 2, 
-              border: '1px solid', 
-              borderColor: 'grey.200',
-              position: { md: 'fixed' },
-              width: { md: '16.67%' },
-              maxWidth: { lg: '240px' }
-            }}
-          >
-            <List component="nav">
-              {menuItems.map((item) => (
-                <ListItem
-                  key={item.text}
-                  component={Link}
-                  to={item.link}
-                  selected={location.pathname === item.link}
-                  sx={{
-                    py: 1.5,
-                    '&.Mui-selected': {
-                      backgroundColor: 'primary.light',
-                      '&:hover': {
-                        backgroundColor: 'primary.light',
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'grey.100', pt: 3, pb: 3 }}>
+      <Container maxWidth="xl">
+        <Grid container spacing={3}>
+          {/* Sidebar */}
+          <Grid item xs={12} md={3} lg={2}>
+            <Paper 
+              elevation={0} 
+              sx={{ 
+                borderRadius: 2,
+                position: 'sticky',
+                top: '1rem',
+                maxHeight: 'calc(100vh - 2rem)',
+                overflowY: 'auto'
+              }}
+            >
+              <List component="nav">
+                {menuItems.map((item) => (
+                  <ListItem
+                    key={item.text}
+                    component={Link}
+                    to={item.link}
+                    selected={location.pathname === item.link}
+                    sx={{
+                      py: 1.5,
+                      borderRadius: 1,
+                      mb: 0.5,
+                      '&.Mui-selected': {
+                        bgcolor: 'primary.light',
+                        color: 'primary.main',
+                        '&:hover': {
+                          bgcolor: 'primary.light',
+                        },
                       },
-                    },
-                    '&:hover': {
-                      backgroundColor: 'action.hover',
-                    },
-                  }}
-                >
-                  <ListItemIcon sx={{ minWidth: 40, color: location.pathname === item.link ? 'primary.main' : 'inherit' }}>
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText 
-                    primary={item.text}
-                    primaryTypographyProps={{
-                      fontSize: '0.9rem',
-                      fontWeight: location.pathname === item.link ? 600 : 500,
-                      color: location.pathname === item.link ? 'primary.main' : 'inherit',
+                      '&:hover': {
+                        bgcolor: 'action.hover',
+                      },
                     }}
-                  />
-                </ListItem>
-              ))}
-            </List>
-          </Paper>
-        </Grid>
+                  >
+                    <ListItemIcon 
+                      sx={{ 
+                        minWidth: 40,
+                        color: location.pathname === item.link ? 'primary.main' : 'inherit'
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={item.text}
+                      primaryTypographyProps={{
+                        fontSize: '0.9rem',
+                        fontWeight: location.pathname === item.link ? 600 : 500,
+                      }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
+          </Grid>
 
-        {/* Main content */}
-        <Grid item xs={12} md={9} lg={10} sx={{ pl: { md: '18.67%', lg: '260px' } }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'grey.200',
-              minHeight: '70vh',
-            }}
-          >
-            <Outlet />
-          </Paper>
+          {/* Main content */}
+          <Grid item xs={12} md={9} lg={10}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                borderRadius: 2,
+                minHeight: 'calc(100vh - 2rem)',
+              }}
+            >
+              <Outlet />
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 

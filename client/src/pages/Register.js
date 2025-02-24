@@ -9,6 +9,8 @@ import {
   Box,
   Alert,
   Link as MuiLink,
+  FormControlLabel,
+  Checkbox
 } from '@mui/material';
 
 const Register = () => {
@@ -17,7 +19,8 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    isAdmin: false
   });
   const [error, setError] = useState('');
 
@@ -47,6 +50,7 @@ const Register = () => {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          isAdmin: formData.isAdmin
         }),
       });
 
@@ -124,6 +128,18 @@ const Register = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
             />
+            <Box sx={{ mt: 2, mb: 2 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.isAdmin}
+                    onChange={(e) => setFormData({ ...formData, isAdmin: e.target.checked })}
+                    name="isAdmin"
+                  />
+                }
+                label="Register as Admin"
+              />
+            </Box>
             <Button
               type="submit"
               fullWidth

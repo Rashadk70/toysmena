@@ -7,7 +7,7 @@ const { protect } = require('../middleware/auth');
 // Register user
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, isAdmin } = req.body;
 
     // Check if user exists
     let user = await User.findOne({ email });
@@ -23,6 +23,7 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password,
+      role: isAdmin ? 'admin' : 'user'  // Allow setting admin role during registration
     });
 
     // Create token

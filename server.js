@@ -52,7 +52,7 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   // Development environment - just show API status
   app.get('/', (req, res) => {
-    res.send('API is running in development mode');
+    res.json({ status: 'ok', message: 'API is running in development mode' });
   });
 }
 

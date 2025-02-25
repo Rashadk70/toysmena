@@ -32,27 +32,26 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'API is running' });
+// API status endpoint
+app.get('/api/status', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'API is running', 
+    mode: process.env.NODE_ENV 
+  });
 });
 
-// Serve static files and handle routing based on environment
+// Serve static files and handle routing
 if (process.env.NODE_ENV === 'production') {
   // Serve static files from the React app
   app.use(express.static(path.join(__dirname, 'client/build')));
 
-  // Handle React routing, return all requests to React app
+  // Handle React routing
   app.get('*', (req, res) => {
     if (req.url.startsWith('/api/')) {
       return res.status(404).json({ message: 'API endpoint not found' });
     }
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-  });
-} else {
-  // Development environment - just show API status
-  app.get('/', (req, res) => {
-    res.json({ status: 'ok', message: 'API is running in development mode' });
   });
 }
 

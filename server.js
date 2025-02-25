@@ -10,10 +10,7 @@ process.env.ADMIN_KEY = process.env.ADMIN_KEY || 'toysmena_admin_2025';
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: ['https://toysmena.netlify.app', 'http://localhost:3000'],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 
 // Import routes
@@ -41,23 +38,15 @@ app.get('/health', (req, res) => {
 });
 
 // Serve static files from the React app
-if (process.env.NODE_ENV === 'production') {
-  // Set static folder
-  app.use(express.static('client/build'));
+app.use(express.static(path.join(__dirname, 'client/build')));
 
-  // Handle React routing
-  app.get('*', (req, res) => {
-    // Don't serve index.html for API routes
-    if (req.url.startsWith('/api/')) {
-      return res.status(404).json({ message: 'API endpoint not found' });
-    }
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-  });
-} else {
-  app.get('/', (req, res) => {
-    res.send('API is running...');
-  });
-}
+// Handle React routing, return all requests to React app
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ message: 'API endpoint not found' });
+  }
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -70,7 +59,7 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`API Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
   console.log('Environment:', process.env.NODE_ENV);
-  console.log('Static files will be served from:', path.resolve(__dirname, 'client', 'build'));
+  console.log('Static files will be served from:', path.join(__dirname, 'client/build'));
 });

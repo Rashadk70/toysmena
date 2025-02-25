@@ -37,16 +37,23 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'API is running' });
 });
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the React app
+  app.use(express.static(path.join(__dirname, 'client/build')));
 
-// Handle React routing, return all requests to React app
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({ message: 'API endpoint not found' });
-  }
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-});
+  // Handle React routing, return all requests to React app
+  app.get('*', (req, res) => {
+    // Don't serve index.html for API routes
+    if (req.url.startsWith('/api/')) {
+      return res.status(404).json({ message: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.send('API is running...');
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -61,5 +68,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log('Environment:', process.env.NODE_ENV);
-  console.log('Static files will be served from:', path.join(__dirname, 'client/build'));
+  if (process.env.NODE_ENV === 'production') {
+    console.log('Static files will be served from:', path.join(__dirname, 'client/build'));
+  }
 });

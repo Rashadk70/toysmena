@@ -37,21 +37,22 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'API is running' });
 });
 
+// Serve static files and handle routing based on environment
 if (process.env.NODE_ENV === 'production') {
   // Serve static files from the React app
   app.use(express.static(path.join(__dirname, 'client/build')));
 
   // Handle React routing, return all requests to React app
   app.get('*', (req, res) => {
-    // Don't serve index.html for API routes
     if (req.url.startsWith('/api/')) {
       return res.status(404).json({ message: 'API endpoint not found' });
     }
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
 } else {
+  // Development environment - just show API status
   app.get('/', (req, res) => {
-    res.send('API is running...');
+    res.send('API is running in development mode');
   });
 }
 

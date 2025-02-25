@@ -2,29 +2,123 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="ToysMena - Educational Toys and Learning Resources"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <meta name="description" content="ToysMena - Educational Resources E-commerce Platform" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!-- Material Icons -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    />
-    <!-- Roboto Font -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-    />
-    <title>ToysMena - Educational Toys</title>
+    
+    <!-- Material UI Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    
+    <title>ToysMena</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      /* Initial loading state */
+      .loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #1976d2;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      /* Error state */
+      .error {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        color: #d32f2f;
+      }
+      /* Show error after 10s if app hasn't loaded */
+      @media (prefers-reduced-motion: no-preference) {
+        .loading {
+          animation: hideLoading 1s ease-in 10s forwards;
+        }
+        .error {
+          animation: showError 1s ease-in 10s forwards;
+        }
+      }
+      @keyframes hideLoading {
+        to {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+      @keyframes showError {
+        to {
+          display: block;
+        }
+      }
+    </style>
+    <!-- Preconnect to API domain -->
+    <link rel="preconnect" href="https://toysmena.onrender.com" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Loading state -->
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading ToysMena...</p>
+      </div>
+      <!-- Error state -->
+      <div class="error">
+        <h2>Something went wrong</h2>
+        <p>We're having trouble loading the application.</p>
+        <p>Please try refreshing the page. If the problem persists, check your internet connection.</p>
+        <button onclick="window.location.reload()" style="
+          margin-top: 20px;
+          padding: 10px 20px;
+          background: #1976d2;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        ">
+          Refresh Page
+        </button>
+      </div>
+    </div>
+    <!-- Error handling -->
+    <script>
+      window.onerror = function(msg, url, lineNo, columnNo, error) {
+        console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
+        return false;
+      };
+      window.onunhandledrejection = function(event) {
+        console.error('Unhandled promise rejection:', event.reason);
+      };
+      // Check if the app loads within 10 seconds
+      setTimeout(function() {
+        var root = document.getElementById('root');
+        var loading = root.querySelector('.loading');
+        var error = root.querySelector('.error');
+        if (loading && loading.style.display !== 'none') {
+          console.error('App failed to load within 10 seconds');
+          if (error) {
+            error.style.display = 'block';
+          }
+        }
+      }, 10000);
+    </script>
   </body>
 </html>

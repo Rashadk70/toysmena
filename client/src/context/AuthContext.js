@@ -1,31 +1,31 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout as logoutAction } from '../store/slices/authSlice';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { user, token } = useSelector(state => state.auth);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const storedToken = localStorage.getItem('token');
+    if (!token && storedToken) {
+      // If we have a token but no user, we should fetch the user data
+      // This would be a good place to add a fetchUserProfile action
     }
     setLoading(false);
-  }, []);
-
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-  };
+  }, [token]);
 
   const logout = () => {
-    setUser(null);
+    dispatch(logoutAction());
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, loading, logout, isAuthenticated: !!token }}>
       {!loading && children}
     </AuthContext.Provider>
   );

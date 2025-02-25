@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Box,
@@ -9,6 +9,9 @@ import {
   Card,
   CardContent,
   CardMedia,
+  CircularProgress,
+  Alert,
+  Skeleton,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Favorite as HeartIcon, ShoppingCart as BasketIcon } from '@mui/icons-material';
@@ -44,6 +47,32 @@ const brandLogos = [
 ];
 
 function Home() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
+
   return (
     <Box>
       {/* Hero Section */}
@@ -81,6 +110,10 @@ function Home() {
                 src={`/images/brands/${brand.toLowerCase().replace(/\s+/g, '-')}.png`}
                 alt={brand}
                 sx={{ width: '100%', height: 'auto', filter: 'grayscale(100%)', opacity: 0.7 }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentNode.innerHTML = `<Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', fontWeight: 'medium' }}>{brand}</Typography>`;
+                }}
               />
             </Grid>
           ))}
@@ -133,11 +166,16 @@ function Home() {
         <Grid container spacing={4}>
           <Grid item xs={12} md={4}>
             <FeatureCard>
+              <Skeleton variant="rectangular" width="100%" height={200} />
               <CardMedia
                 component="img"
                 height="200"
                 image="/images/team.jpg"
                 alt="Meet the team"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentNode.innerHTML = `<Skeleton variant="rectangular" width="100%" height={200} />`;
+                }}
               />
               <CardContent>
                 <Typography variant="h6" gutterBottom>
@@ -156,11 +194,16 @@ function Home() {
           </Grid>
           <Grid item xs={12} md={4}>
             <FeatureCard>
+              <Skeleton variant="rectangular" width="100%" height={200} />
               <CardMedia
                 component="img"
                 height="200"
                 image="/images/digital-catalogues.jpg"
                 alt="Digital catalogues"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentNode.innerHTML = `<Skeleton variant="rectangular" width="100%" height={200} />`;
+                }}
               />
               <CardContent>
                 <Typography variant="h6" gutterBottom>
@@ -179,11 +222,16 @@ function Home() {
           </Grid>
           <Grid item xs={12} md={4}>
             <FeatureCard>
+              <Skeleton variant="rectangular" width="100%" height={200} />
               <CardMedia
                 component="img"
                 height="200"
                 image="/images/delivery.jpg"
                 alt="Consolidated delivery"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentNode.innerHTML = `<Skeleton variant="rectangular" width="100%" height={200} />`;
+                }}
               />
               <CardContent>
                 <Typography variant="h6" gutterBottom>

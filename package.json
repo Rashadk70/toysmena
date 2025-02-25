@@ -1,7 +1,7 @@
 {
   "name": "toysmena",
   "version": "1.0.0",
-  "description": "Educational resources e-commerce platform",
+  "description": "ToysMena E-commerce Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,8 +9,9 @@
     "dev": "nodemon server.js",
     "client": "cd client && npm start",
     "dev:full": "concurrently \"npm run dev\" \"npm run client\"",
+    "install-all": "npm install && cd client && npm install",
     "install-client": "cd client && npm install",
-    "heroku-postbuild": "npm run install-client && npm run build"
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
@@ -31,5 +32,8 @@
   "devDependencies": {
     "concurrently": "^8.2.1",
     "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
